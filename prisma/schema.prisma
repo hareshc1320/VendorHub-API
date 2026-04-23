@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String         @id @default(cuid())
+  email      String         @unique
+  password   String
+  full_name  String?
+  store_name String?
+  bio        String?
+  createdAt  DateTime       @default(now())
+
+  products      Product[]
+  customers     Customer[]
+  orders        Order[]
+  notifications Notification[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  price       Float
+  stock       Int      @default(0)
+  category    String
+  description String?
+  owner_id    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner       User     @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  status       String   @default("active")
+  orders_count Int      @default(0)
+  total_spent  Float    @default(0)
+  owner_id     String
+  createdAt    DateTime @default(now())
+
+  owner        User     @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  order_number  String
+  customer_name String
+  total         Float
+  status        String   @default("processing")
+  items_count   Int      @default(1)
+  owner_id      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  owner         User     @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  desc      String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  owner_id  String
+  createdAt DateTime @default(now())
+
+  owner     User     @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+}
+
+model PricingPlan {
+  id           String  @id
+  name         String
+  price        Float
+  yearly_price Float   @default(0)
+  period       String  @default("month")
+  description  String
+  badge        String?
+  highlight    Boolean @default(false)
+  active       Boolean @default(true)
+  subscribers  Int     @default(0)
+  features     String
+  sort_order   Int     @default(0)
+}
