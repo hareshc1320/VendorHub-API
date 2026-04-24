@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import authRoutes          from "./routes/auth.js";
 import productsRoutes      from "./routes/products.js";
 import customersRoutes     from "./routes/customers.js";
@@ -8,6 +10,10 @@ import dashboardRoutes     from "./routes/dashboard.js";
 import profileRoutes       from "./routes/profile.js";
 import notificationsRoutes from "./routes/notifications.js";
 import pricingRoutes       from "./routes/pricing.js";
+import reviewsRoutes       from "./routes/reviews.js";
+import uploadRoutes        from "./routes/upload.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +25,9 @@ const allowedOrigins = process.env.CORS_ORIGIN
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
+// Serve uploaded files
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 // Routes
 app.use("/api/auth",          authRoutes);
 app.use("/api/products",      productsRoutes);
@@ -28,6 +37,8 @@ app.use("/api/dashboard",     dashboardRoutes);
 app.use("/api/profile",       profileRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/pricing",       pricingRoutes);
+app.use("/api/reviews",       reviewsRoutes);
+app.use("/api/upload",        uploadRoutes);
 
 // Health check
 app.get("/api/health", (_req, res) => res.json({ status: "ok", time: new Date().toISOString() }));

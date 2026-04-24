@@ -20,7 +20,7 @@ router.get("/", authenticate, async (req, res) => {
 
 // POST /api/products
 router.post("/", authenticate, async (req, res) => {
-  const { name, price, stock, category, description } = req.body;
+  const { name, price, stock, category, description, image_url } = req.body;
   if (!name || price == null || !category) {
     return res.status(400).json({ error: "name, price and category are required" });
   }
@@ -32,6 +32,7 @@ router.post("/", authenticate, async (req, res) => {
         stock: parseInt(stock ?? 0),
         category,
         description: description?.trim() || null,
+        image_url: image_url || null,
         owner_id: req.userId,
       },
     });
@@ -43,7 +44,7 @@ router.post("/", authenticate, async (req, res) => {
 
 // PUT /api/products/:id
 router.put("/:id", authenticate, async (req, res) => {
-  const { name, price, stock, category, description } = req.body;
+  const { name, price, stock, category, description, image_url } = req.body;
   try {
     const existing = await prisma.product.findFirst({
       where: { id: req.params.id, owner_id: req.userId },
@@ -53,11 +54,12 @@ router.put("/:id", authenticate, async (req, res) => {
     const updated = await prisma.product.update({
       where: { id: req.params.id },
       data: {
-        ...(name != null      && { name: name.trim() }),
-        ...(price != null     && { price: parseFloat(price) }),
-        ...(stock != null     && { stock: parseInt(stock) }),
-        ...(category != null  && { category }),
+        ...(name != null        && { name: name.trim() }),
+        ...(price != null       && { price: parseFloat(price) }),
+        ...(stock != null       && { stock: parseInt(stock) }),
+        ...(category != null    && { category }),
         ...(description != null && { description: description.trim() || null }),
+        ...(image_url !== undefined && { image_url: image_url || null }),
       },
     });
     return res.json(updated);

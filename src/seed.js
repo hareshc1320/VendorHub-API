@@ -149,6 +149,24 @@ async function main() {
   }
   console.log(`✓ ${pricingData.length} pricing plans seeded`);
 
+  // Reviews
+  const reviewsData = [
+    { customer_name: "Aarav Shah",   product_name: "Wireless Noise-Cancelling Headphones", rating: 5, comment: "Absolutely love this product! Best headphones I've ever used. Sound quality is incredible.", status: "published" },
+    { customer_name: "Priya Mehta",  product_name: "Smart Fitness Tracker Pro",            rating: 4, comment: "Great tracker, very accurate. Battery life could be better but overall very happy.", status: "published" },
+    { customer_name: "Sneha Patel",  product_name: "Mechanical Keyboard RGB",              rating: 5, comment: "The typing feel is amazing. RGB lighting is beautiful. Highly recommend!", status: "published" },
+    { customer_name: "Karan Joshi",  product_name: "4K Webcam Pro",                        rating: 3, comment: "Good quality but a bit pricey for what it offers. Setup was easy though.", status: "published" },
+    { customer_name: "Vikram Singh", product_name: "Portable SSD 1TB",                    rating: 5, comment: "Super fast and compact. Transferred 50GB in under a minute. Perfect for travel.", status: "published" },
+    { customer_name: "Divya Nair",   product_name: "True Wireless Earbuds",               rating: 4, comment: "Great sound and ANC. Fit is comfortable for long listening sessions.", status: "published" },
+    { customer_name: "Rohan Verma",  product_name: "Gaming Mouse Pro",                    rating: 2, comment: "Feels a bit cheap for the price. The scroll wheel is stiff. Expected better.", status: "pending"   },
+    { customer_name: "Anita Sharma", product_name: "Smart Watch Series X",                rating: 5, comment: "Incredible watch. Health tracking is spot on and the display is gorgeous.", status: "published" },
+  ];
+
+  await prisma.review.deleteMany({ where: { owner_id: user.id } });
+  await prisma.review.createMany({
+    data: reviewsData.map((r) => ({ ...r, owner_id: user.id })),
+  });
+  console.log(`✓ ${reviewsData.length} reviews seeded`);
+
   console.log("\n✅ Database seeded successfully!");
   console.log("   Login: admin@vendorhub.io / admin123\n");
 }
